@@ -1,5 +1,4 @@
 #include <cstring>
-#include <iostream>
 #include <sys/epoll.h>
 #include <sys/socket.h>
 #include <system_error>
@@ -8,8 +7,8 @@
 #include "Socket.h"
 
 
-extern "C" Socket* Constructor(const char* ccServerIP, unsigned short usServerPort) {
-    return new Socket(ccServerIP, usServerPort);
+extern "C" Socket* Constructor(const char* ccIP, unsigned short usPort) {
+    return new Socket(ccIP, usPort);
 }
 
 

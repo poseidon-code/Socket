@@ -4,14 +4,12 @@ project(Socket)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 
 set(LIBSOCKET_SOURCES src/Socket.cpp)
 set(LIBSOCKET_INCLUDE_DIRECTORIES include)
-
 
 # libSocket.a
 add_library(Socket_static STATIC ${LIBSOCKET_SOURCES})
@@ -30,6 +28,7 @@ set_target_properties(
     PROPERTIES 
     OUTPUT_NAME Socket
 )
+
 
 # VS Code CMake Tools Commands
 # CMake:Configure                                           : cmake -S . -B build

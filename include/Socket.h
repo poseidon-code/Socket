@@ -10,11 +10,11 @@ private:
 
 public:
     int udpsocket;
-    Socket(const char* ccIP, unsigned short usPort);
+    Socket(const char* ccIP, const unsigned short cusPort);
     ~Socket();
 
-    int Send(const char* ccData, unsigned short usSendToPort);
-    int Receive(std::function<void(const char*, int)> fnCallback, const unsigned short usBufferSize);
+    int Send(const char* ccData, const char* ccSendToIP, const unsigned short cusSendToPort);
+    int Receive(std::function<void(const char*, int)> fnCallback, const unsigned short cusBufferSize);
 };
 
-extern "C" Socket* Constructor(const char* ccIP, unsigned short usPort);
+extern "C" Socket* Constructor(const char* ccIP, const unsigned short cusPort);

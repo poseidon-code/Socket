@@ -7,14 +7,14 @@
 #include "Socket.h"
 
 
-extern "C" Socket* Constructor(const char* ccIP, unsigned short usPort) {
-    return new Socket(ccIP, usPort);
+extern "C" Socket* Constructor(const char* ccIP, const unsigned short cusPort) {
+    return new Socket(ccIP, cusPort);
 }
 
 
-Socket::Socket(const char* ccIP, unsigned short usPort) {
+Socket::Socket(const char* ccIP, const unsigned short cusPort) {
     address.sin_family = AF_INET;
-    address.sin_port = htons(usPort);
+    address.sin_port = htons(cusPort);
     address.sin_addr.s_addr = inet_addr(ccIP);
 
     udpsocket = socket(AF_INET, SOCK_DGRAM, 0);
@@ -30,10 +30,11 @@ Socket::~Socket() {
 };
 
 
-int Socket::Send(const char* ccData, unsigned short usSendToPort) {
+int Socket::Send(const char* ccData, const char* ccSendToIP, const unsigned short cusSendToPort) {
     sockaddr_in sendto_address{};
     sendto_address.sin_family = AF_INET;
-    sendto_address.sin_port = htons(usSendToPort);
+    sendto_address.sin_port = htons(cusSendToPort);
+    sendto_address.sin_addr.s_addr = inet_addr(ccSendToIP);
 
     int bytes_sent = sendto(
         udpsocket,
@@ -46,8 +47,8 @@ int Socket::Send(const char* ccData, unsigned short usSendToPort) {
 }
 
 
-int Socket::Receive(std::function<void(const char*, int)> fnCallback, const unsigned short usBufferSize) {
-    char buffer[usBufferSize];
+int Socket::Receive(std::function<void(const char*, int)> fnCallback, const unsigned short cusBufferSize) {
+    char buffer[cusBufferSize];
     socklen_t address_length = sizeof(address);
     
     int bytes_read = recvfrom(

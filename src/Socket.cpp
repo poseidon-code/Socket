@@ -7,21 +7,29 @@
 #include "Socket.h"
 
 
-extern "C" Socket* Constructor(const char* ccIP, const unsigned short cusPort) {
-    return new Socket(ccIP, cusPort);
-}
-
-
-Socket::Socket(const char* ccIP, const unsigned short cusPort) {
+Network::Network(const char* ccIP, const unsigned short int cusPort) {
     address.sin_family = AF_INET;
     address.sin_port = htons(cusPort);
     address.sin_addr.s_addr = inet_addr(ccIP);
+    length = sizeof(address);
+}
+
+extern "C" Socket* Constructor(const Network& network) {
+    return new Socket(network);
+}
+
+
+Socket::Socket(const Network& network) {
+    address.sin_family = network.address.sin_family;
+    address.sin_port = network.address.sin_port;
+    address.sin_addr.s_addr = network.address.sin_addr.s_addr;
+    length = network.length;
 
     udpsocket = socket(AF_INET, SOCK_DGRAM, 0);
     if (udpsocket == -1)
         throw std::runtime_error("failed to create sender socket");
     else
-        bind(udpsocket, (sockaddr*)&address, sizeof(address));
+        bind(udpsocket, (sockaddr*)&address, length);
 };
 
 
@@ -30,32 +38,26 @@ Socket::~Socket() {
 };
 
 
-int Socket::Send(const char* ccData, const char* ccSendToIP, const unsigned short cusSendToPort) {
-    sockaddr_in sendto_address{};
-    sendto_address.sin_family = AF_INET;
-    sendto_address.sin_port = htons(cusSendToPort);
-    sendto_address.sin_addr.s_addr = inet_addr(ccSendToIP);
-
+int Socket::Send(const char* ccData, const Network& sendto_network) {
     int bytes_sent = sendto(
         udpsocket,
         ccData, std::strlen(ccData),
         MSG_CONFIRM | MSG_NOSIGNAL,
-        (struct sockaddr*)&sendto_address, sizeof(sendto_address)
+        (struct sockaddr*)&sendto_network.address, sendto_network.length
     );
 
     return bytes_sent;
 }
 
 
-int Socket::Receive(std::function<void(const char*, int)> fnCallback, const unsigned short cusBufferSize) {
+int Socket::Receive(std::function<void(const char*, int)> fnCallback, const unsigned short int cusBufferSize) {
     char buffer[cusBufferSize];
-    socklen_t address_length = sizeof(address);
     
     int bytes_read = recvfrom(
         udpsocket,
         buffer, sizeof(buffer), 
         0,
-        (struct sockaddr*)&address, &address_length);
+        (struct sockaddr*)&address, &length);
 
     if (bytes_read > 0) {
         buffer[bytes_read] = '\0';

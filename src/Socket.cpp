@@ -50,7 +50,7 @@ int Socket::Send(const char* ccData, const Network& sendto_network) {
 }
 
 
-int Socket::Receive(std::function<void(const char*, int)> fnCallback, const unsigned short int cusBufferSize) {
+int Socket::Receive(std::function<void(char*, int)> fnCallback, const unsigned short int cusBufferSize) {
     char buffer[cusBufferSize];
     
     int bytes_read = recvfrom(

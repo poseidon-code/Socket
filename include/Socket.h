@@ -21,7 +21,7 @@ public:
     ~Socket();
 
     int Send(const char* ccData, const Network& network);
-    int Receive(std::function<void(const char*, int)> fnCallback, const unsigned short int cusBufferSize);
+    int Receive(std::function<void(char*, int)> fnCallback, const unsigned short int cusBufferSize);
 };
 
 extern "C" Socket* Constructor(const Network& network);

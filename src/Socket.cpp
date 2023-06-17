@@ -1,5 +1,4 @@
 #include <cstring>
-#include <sys/epoll.h>
 #include <sys/socket.h>
 #include <system_error>
 #include <unistd.h>
@@ -7,9 +6,9 @@
 #include "Socket.h"
 
 
-Network::Network(const char* ccIP, const unsigned short int cusPort) {
+Network::Network(const char* ccIP, const unsigned short int cusiPort) {
     address.sin_family = AF_INET;
-    address.sin_port = htons(cusPort);
+    address.sin_port = htons(cusiPort);
     address.sin_addr.s_addr = inet_addr(ccIP);
     length = sizeof(address);
 }
@@ -50,8 +49,8 @@ int Socket::Send(const char* ccData, const Network& sendto_network) {
 }
 
 
-int Socket::Receive(std::function<void(char*, int)> fnCallback, const unsigned short int cusBufferSize) {
-    char buffer[cusBufferSize];
+int Socket::Receive(std::function<void(char*, int)> fnCallback, const unsigned short int cusiBufferSize) {
+    char buffer[cusiBufferSize];
     
     int bytes_read = recvfrom(
         udpsocket,

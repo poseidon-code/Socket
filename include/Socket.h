@@ -10,6 +10,7 @@ struct Network {
     Network(const char* ccIP, const unsigned short int cusiPort);
 };
 
+
 class Socket {
 private:
     sockaddr_in address{};
@@ -20,8 +21,8 @@ public:
     Socket(const Network& network);
     ~Socket();
 
-    int Send(const char* ccData, const Network& sendto_network);
-    int Receive(std::function<void(char*, int)> fnCallback, const unsigned short int cusiBufferSize);
+    int Send(const char* ccData, const unsigned int cuiSize, const Network& sendto_network);
+    int Receive(std::function<void(unsigned char*, int)> fnCallback, const unsigned int cuiBufferSize);
 };
 
 extern "C" Socket* Constructor(const Network& network);

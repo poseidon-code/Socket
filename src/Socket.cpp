@@ -25,6 +25,7 @@ Socket::Socket(const Network& network) {
     length = network.length;
 
     udpsocket = socket(AF_INET, SOCK_DGRAM, 0);
+    
     if (udpsocket == -1)
         throw std::runtime_error("failed to create sender socket");
     else
@@ -37,10 +38,10 @@ Socket::~Socket() {
 };
 
 
-int Socket::Send(const char* ccData, const Network& sendto_network) {
+int Socket::Send(const char* ccData, const unsigned int cuiSize, const Network& sendto_network) {
     int bytes_sent = sendto(
         udpsocket,
-        ccData, std::strlen(ccData),
+        ccData, cuiSize,
         MSG_CONFIRM | MSG_NOSIGNAL,
         (struct sockaddr*)&sendto_network.address, sendto_network.length
     );
@@ -49,19 +50,19 @@ int Socket::Send(const char* ccData, const Network& sendto_network) {
 }
 
 
-int Socket::Receive(std::function<void(char*, int)> fnCallback, const unsigned short int cusiBufferSize) {
-    char buffer[cusiBufferSize];
+int Socket::Receive(std::function<void(unsigned char*, int)> fnCallback, const unsigned int cuiBufferSize) {
+    unsigned char buffer[cuiBufferSize];
+    std::memset(&buffer, 0x00, cuiBufferSize);
     
     int bytes_read = recvfrom(
         udpsocket,
-        buffer, sizeof(buffer), 
+        buffer, cuiBufferSize,
         0,
-        (struct sockaddr*)&address, &length);
+        (struct sockaddr*)&address, &length
+    );
 
-    if (bytes_read > 0) {
-        buffer[bytes_read] = '\0';
+    if (bytes_read > 0)
         fnCallback(buffer, bytes_read);
-    }
 
     return bytes_read;
 }

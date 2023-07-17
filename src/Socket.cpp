@@ -13,8 +13,14 @@ Network::Network(const char* ccIP, const unsigned short int cusiPort) {
     length = sizeof(address);
 }
 
-extern "C" Socket* Constructor(const Network& network) {
-    return new Socket(network);
+extern "C" {
+    Socket* SocketConstructor(const Network& network) {
+        return new Socket(network);
+    }
+
+    Network NetworkConstructor(const char* ccIP, const unsigned short int cusiPort) {
+        return Network(ccIP, cusiPort);
+    }
 }
 
 

@@ -25,4 +25,7 @@ public:
     int Receive(std::function<void(unsigned char*, int)> fnCallback, const unsigned int cuiBufferSize);
 };
 
-extern "C" Socket* Constructor(const Network& network);
+extern "C" {
+    Socket* SocketConstructor(const Network& network);
+    Network NetworkConstructor(const char* ccIP, const unsigned short int cusiPort);
+}

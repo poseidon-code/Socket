@@ -7,10 +7,10 @@
 
 
 Network::Network(const char* ccIP, const unsigned short int cusiPort) {
-    address.sin_family = AF_INET;
-    address.sin_port = htons(cusiPort);
-    address.sin_addr.s_addr = inet_addr(ccIP);
-    length = sizeof(address);
+    this->address.sin_family = AF_INET;
+    this->address.sin_port = htons(cusiPort);
+    this->address.sin_addr.s_addr = inet_addr(ccIP);
+    this->length = sizeof(this->address);
 }
 
 extern "C" {
@@ -25,28 +25,28 @@ extern "C" {
 
 
 Socket::Socket(const Network& network) {
-    address.sin_family = network.address.sin_family;
-    address.sin_port = network.address.sin_port;
-    address.sin_addr.s_addr = network.address.sin_addr.s_addr;
-    length = network.length;
+    this->address.sin_family = network.address.sin_family;
+    this->address.sin_port = network.address.sin_port;
+    this->address.sin_addr.s_addr = network.address.sin_addr.s_addr;
+    this->length = network.length;
 
-    udpsocket = socket(AF_INET, SOCK_DGRAM, 0);
+    this->udpsocket = socket(AF_INET, SOCK_DGRAM, 0);
     
-    if (udpsocket == -1)
-        throw std::runtime_error("failed to create sender socket");
+    if (this->udpsocket == -1)
+        throw std::runtime_error("failed to create socket");
     else
-        bind(udpsocket, (sockaddr*)&address, length);
+        bind(this->udpsocket, (sockaddr*)&this->address, this->length);
 };
 
 
 Socket::~Socket() {
-    if (udpsocket > 0) close(udpsocket);
+    if (this->udpsocket > 0) close(this->udpsocket);
 };
 
 
 int Socket::Send(const char* ccData, const unsigned int cuiSize, const Network& sendto_network) {
     int bytes_sent = sendto(
-        udpsocket,
+        this->udpsocket,
         ccData, cuiSize,
         MSG_CONFIRM | MSG_NOSIGNAL,
         (struct sockaddr*)&sendto_network.address, sendto_network.length
@@ -61,14 +61,13 @@ int Socket::Receive(std::function<void(unsigned char*, int)> fnCallback, const u
     std::memset(&buffer, 0x00, cuiBufferSize);
     
     int bytes_read = recvfrom(
-        udpsocket,
+        this->udpsocket,
         buffer, cuiBufferSize,
         0,
-        (struct sockaddr*)&address, &length
+        (struct sockaddr*)&this->address, &this->length
     );
 
-    if (bytes_read > 0)
-        fnCallback(buffer, bytes_read);
+    if (bytes_read > 0) fnCallback(buffer, bytes_read);
 
     return bytes_read;
 }

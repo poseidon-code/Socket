@@ -15,7 +15,7 @@ struct Network {
         this->address.sin_family = AF_INET;
         this->address.sin_port = htons(port);
         this->address.sin_addr.s_addr = inet_addr(ipv4_address);
-        this->length = sizeof(address);
+        this->length = sizeof(this->address);
     }
 };
 

@@ -7,7 +7,7 @@
 struct Network {
     sockaddr_in address{};
     socklen_t length;
-    Network(const char* ccIP, const unsigned short int cusiPort);
+    Network(const char* ipv4_address, const unsigned short int port);
 };
 
 
@@ -21,11 +21,11 @@ public:
     Socket(const Network& network);
     ~Socket();
 
-    int Send(const char* ccData, const unsigned int cuiSize, const Network& sendto_network);
-    int Receive(std::function<void(unsigned char*, int)> fnCallback, const unsigned int cuiBufferSize);
+    ssize_t Send(const unsigned char* data, const unsigned int size, const Network& send_to);
+    ssize_t Receive(std::function<void(unsigned char*, int)> callback, const unsigned int size);
 };
 
 extern "C" {
     Socket* SocketConstructor(const Network& network);
-    Network NetworkConstructor(const char* ccIP, const unsigned short int cusiPort);
+    Network NetworkConstructor(const char* ipv4_address, const unsigned short int port);
 }

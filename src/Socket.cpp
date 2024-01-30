@@ -1,4 +1,3 @@
-#include <cstring>
 #include <sys/socket.h>
 #include <system_error>
 #include <unistd.h>
@@ -6,10 +5,10 @@
 #include "Socket.h"
 
 
-Network::Network(const char* ccIP, const unsigned short int cusiPort) {
+Network::Network(const char* ipv4_address, const unsigned short int port) {
     this->address.sin_family = AF_INET;
-    this->address.sin_port = htons(cusiPort);
-    this->address.sin_addr.s_addr = inet_addr(ccIP);
+    this->address.sin_port = htons(port);
+    this->address.sin_addr.s_addr = inet_addr(ipv4_address);
     this->length = sizeof(this->address);
 }
 
@@ -18,8 +17,8 @@ extern "C" {
         return new Socket(network);
     }
 
-    Network NetworkConstructor(const char* ccIP, const unsigned short int cusiPort) {
-        return Network(ccIP, cusiPort);
+    Network NetworkConstructor(const char* ipv4_address, const unsigned short int port) {
+        return Network(ipv4_address, port);
     }
 }
 
@@ -44,30 +43,29 @@ Socket::~Socket() {
 };
 
 
-int Socket::Send(const char* ccData, const unsigned int cuiSize, const Network& sendto_network) {
-    int bytes_sent = sendto(
+ssize_t Socket::Send(const unsigned char* data, const unsigned int size, const Network& send_to) {
+    ssize_t bytes_sent = sendto(
         this->udpsocket,
-        ccData, cuiSize,
+        data, size,
         MSG_CONFIRM | MSG_NOSIGNAL,
-        (struct sockaddr*)&sendto_network.address, sendto_network.length
+        (struct sockaddr*)&send_to.address, send_to.length
     );
 
     return bytes_sent;
 }
 
 
-int Socket::Receive(std::function<void(unsigned char*, int)> fnCallback, const unsigned int cuiBufferSize) {
-    unsigned char buffer[cuiBufferSize];
-    std::memset(&buffer, 0x00, cuiBufferSize);
+ssize_t Socket::Receive(std::function<void(unsigned char*, int)> callback, const unsigned int size) {
+    unsigned char buffer[size] = {0};
     
-    int bytes_read = recvfrom(
+    ssize_t bytes_read = recvfrom(
         this->udpsocket,
-        buffer, cuiBufferSize,
+        buffer, size,
         0,
         (struct sockaddr*)&this->address, &this->length
     );
 
-    if (bytes_read > 0) fnCallback(buffer, bytes_read);
+    if (bytes_read > 0) callback(buffer, bytes_read);
 
     return bytes_read;
 }

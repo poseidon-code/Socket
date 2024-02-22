@@ -15,10 +15,11 @@ class Socket {
 private:
     sockaddr_in address{};
     socklen_t length;
+    int broadcast;
 
 public:
     int udpsocket;
-    Socket(const Network& network);
+    Socket(const Network& network, bool broadcast);
     ~Socket();
 
     ssize_t Send(const unsigned char* data, const unsigned int size, const Network& send_to);
@@ -26,6 +27,6 @@ public:
 };
 
 extern "C" {
-    Socket* SocketConstructor(const Network& network);
+    Socket* SocketConstructor(const Network& network, bool broadcast);
     Network NetworkConstructor(const char* ipv4_address, const unsigned short int port);
 }

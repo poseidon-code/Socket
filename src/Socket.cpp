@@ -13,8 +13,8 @@ Network::Network(const char* ipv4_address, const unsigned short int port) {
 }
 
 extern "C" {
-    Socket* SocketConstructor(const Network& network) {
-        return new Socket(network);
+    Socket* SocketConstructor(const Network& network, bool broadcast) {
+        return new Socket(network, broadcast);
     }
 
     Network NetworkConstructor(const char* ipv4_address, const unsigned short int port) {
@@ -23,18 +23,27 @@ extern "C" {
 }
 
 
-Socket::Socket(const Network& network) {
+Socket::Socket(const Network& network, bool broadcast) {
     this->address.sin_family = network.address.sin_family;
     this->address.sin_port = network.address.sin_port;
     this->address.sin_addr.s_addr = network.address.sin_addr.s_addr;
     this->length = network.length;
+    this->broadcast = broadcast;
 
-    this->udpsocket = socket(AF_INET, SOCK_DGRAM, 0);
+    this->udpsocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     
     if (this->udpsocket == -1)
         throw std::runtime_error("failed to create socket");
-    else
-        bind(this->udpsocket, (sockaddr*)&this->address, this->length);
+
+    if (
+        this->broadcast &&
+        setsockopt(this->udpsocket, SOL_SOCKET, SO_BROADCAST, &this->broadcast, sizeof(this->broadcast)) < 0
+    ) {
+        close(this->udpsocket);
+        throw std::runtime_error("failed to enable broadcasting on socket");
+    }
+
+    bind(this->udpsocket, (sockaddr*)&this->address, this->length);
 };
 
 

@@ -71,7 +71,7 @@ public:
 
     ssize_t Receive(std::function<void(unsigned char*, int)> callback, const unsigned int size) {
         unsigned char buffer[size] = {0};
-        
+
         ssize_t bytes_read = recvfrom(
             this->udpsocket,
             buffer, size,

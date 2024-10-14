@@ -1,33 +1,17 @@
 cmake_minimum_required(VERSION 3.25)
-project(Socket)
+project(Socket LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-
-set(LIBSOCKET_SOURCES src/Socket.cpp)
-set(LIBSOCKET_INCLUDE_DIRECTORIES include)
-
-# libSocket.a
-add_library(Socket_static STATIC ${LIBSOCKET_SOURCES})
-target_include_directories(Socket_static PUBLIC ${LIBSOCKET_INCLUDE_DIRECTORIES})
-set_target_properties(
-    Socket_static
-    PROPERTIES 
-    OUTPUT_NAME Socket
+set(LIBSOCKET_INCLUDE_DIRECTORIES
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/"
+    PARENT_SCOPE
 )
 
-# libSocket.so
-add_library(Socket_shared SHARED ${LIBSOCKET_SOURCES})
-target_include_directories(Socket_shared PUBLIC ${LIBSOCKET_INCLUDE_DIRECTORIES})
-set_target_properties(
-    Socket_shared
-    PROPERTIES 
-    OUTPUT_NAME Socket
-)
+add_library(${PROJECT_NAME} INTERFACE)
+target_include_directories(${PROJECT_NAME} INTERFACE ${LIBSOCKET_INCLUDE_DIRECTORIES})
 
 
 # VS Code CMake Tools Commands

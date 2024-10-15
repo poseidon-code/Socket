@@ -1,10 +1,13 @@
 #pragma once
 
-#include <arpa/inet.h>
+#include <cstdint>
 #include <functional>
-#include <sys/socket.h>
 #include <system_error>
+
+#include <sys/socket.h>
+#include <arpa/inet.h>
 #include <unistd.h>
+
 
 
 struct Network {
@@ -57,7 +60,7 @@ public:
     }
 
 
-    ssize_t Send(const unsigned char* data, const unsigned int size, const Network& send_to) {
+    ssize_t Send(const uint8_t* data, const size_t size, const Network& send_to) {
         ssize_t bytes_sent = sendto(
             this->udpsocket,
             data, size,
@@ -69,8 +72,8 @@ public:
     }
 
 
-    ssize_t Receive(std::function<void(unsigned char*, int)> callback, const unsigned int size) {
-        unsigned char buffer[size] = {0};
+    ssize_t Receive(std::function<void(uint8_t*, ssize_t)> callback, const size_t size) {
+        uint8_t buffer[size] = {0};
 
         ssize_t bytes_read = recvfrom(
             this->udpsocket,
